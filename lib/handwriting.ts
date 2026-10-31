@@ -107,16 +107,17 @@ export type Gap = "start" | "stroke" | "glyph" | "word" | "comma" | "stop" | "li
 /*
  * Writing speed. These two numbers are the knobs to turn:
  *   NIB_SPEED   - how fast the nib moves while drawing, in em of ink per
- *                 second. Lower = slower writing. (Was 22.)
+ *                 second. Lower = slower writing. (Was 22, then 14.)
  *   PAUSE_SCALE - multiplies every pause below. Higher = longer pauses
- *                 between letters, words and sentences.
- * Very long letters are still sped up to fit MAX_WRITING_MS.
+ *                 between letters, words and sentences. (Was 1, then 1.4.)
+ * At these values the pen writes about 3 letters a second, roughly 35
+ * words a minute: slower than even a slow reader, so the writing never
+ * runs ahead of them. Long letters are NOT sped up; they simply take longer.
  */
-const NIB_SPEED = 14;
-const PAUSE_SCALE = 1.4;
-const MAX_WRITING_MS = 90_000;
+const NIB_SPEED = 9;
+const PAUSE_SCALE = 1.8;
 
-// Base pause (ms) before a stroke, by reason. Scaled down for long letters.
+// Base pause (ms) before a stroke, by reason.
 const GAP_MS: Record<Gap, number> = {
   start: 400 * PAUSE_SCALE,
   stroke: 25 * PAUSE_SCALE,
@@ -394,15 +395,15 @@ export type Timeline = {
 
 /**
  * Plan when each stroke is drawn: steady nib speed while drawing, with a
- * pause before each stroke based on its gap. Long letters are sped up
- * uniformly so the whole thing fits in maxMs.
+ * pause before each stroke based on its gap. The pace is the same however
+ * long the letter is, so a slow reader can always keep up.
  */
-export function planTimeline(layout: LetterLayout, maxMs = MAX_WRITING_MS): Timeline {
+export function planTimeline(layout: LetterLayout): Timeline {
   const n = layout.strokes.length;
   const starts = new Float64Array(n);
   const durations = new Float64Array(n);
-  // Script glyphs use ~1.7-1.9 em of ink per letter, so at NIB_SPEED 14
-  // with lifts this writes roughly 4-5 letters a second.
+  // Script glyphs use ~1.7-1.9 em of ink per letter, so at NIB_SPEED 9
+  // with lifts this writes roughly 3 letters a second.
   const pxPerMs = (layout.fontSize * NIB_SPEED) / 1000;
 
   let t = 0;
@@ -413,14 +414,6 @@ export function planTimeline(layout: LetterLayout, maxMs = MAX_WRITING_MS): Time
     t += durations[i];
   });
 
-  if (t > maxMs) {
-    const k = maxMs / t;
-    for (let i = 0; i < n; i++) {
-      starts[i] *= k;
-      durations[i] *= k;
-    }
-    t = maxMs;
-  }
   return { starts, durations, total: t };
 }
 

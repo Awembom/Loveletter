@@ -107,9 +107,9 @@ This is the part that matters most. Get it right before polishing anything else.
 - Update paths imperatively via refs during the animation. Do not put per-frame state in React state.
 - A fountain pen graphic (inline SVG) follows the point currently being drawn and lifts slightly between strokes.
 - Timing: steady speed while the nib is down, short lifts within a word, longer pauses between words, longer still after commas, full stops and line ends.
-- Cap total duration (about 60–90 seconds) by speeding up long letters.
+- Write slowly enough for a slow reader to keep up (about 3 letters a second). Do not speed up long letters; they simply take longer. There is no "show the whole letter" button.
 - Auto-scroll so the line being written stays in view.
-- Provide a "Show the whole letter" button that finishes instantly.
+- Once a letter has been fully written, the browser remembers it; reopening shows it finished, with a "Watch it being written again" button.
 - Measure the container width once at start; don't reflow mid-animation.
 - Respect `prefers-reduced-motion`: show the finished letter immediately.
 

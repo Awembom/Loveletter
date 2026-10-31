@@ -8,8 +8,8 @@ export type PenSound = {
 };
 
 // Pen scratch loudness. Kept well under the music so it's a hint of
-// paper texture, not a hiss. (Was 0.09.)
-const VOLUME = 0.01;
+// paper texture, not a hiss. (Was 0.09, then 0.01.)
+const VOLUME = 0.004;
 
 export function createPenSound(ctx: AudioContext, destination: AudioNode): PenSound {
   // Two seconds of white noise, looped.

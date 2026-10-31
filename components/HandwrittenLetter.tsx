@@ -15,7 +15,7 @@ import type { PenSound } from "@/lib/penSound";
 type Props = {
   content: LetterContent;
   style: Style;
-  /** Becomes true when the reader asks to see the whole letter at once. */
+  /** True to show the finished letter at once (already read in this browser). */
   skip: boolean;
   sound: PenSound | null;
   onDone: () => void;

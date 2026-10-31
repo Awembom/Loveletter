@@ -164,12 +164,7 @@ export default function LetterViewer({ letter }: Props) {
       />
 
       {phase === "writing" ? (
-        <div className="reading-bar">
-          <button type="button" className="button button-quiet" onClick={() => setSkip(true)}>
-            Show the whole letter
-          </button>
-          {soundButton}
-        </div>
+        soundButton && <div className="reading-bar">{soundButton}</div>
       ) : (
         <div className="reading-end">
           <Link href="/" className="button">Write a {kind} back</Link>
