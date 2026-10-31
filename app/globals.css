@@ -1,0 +1,902 @@
+/* ------------------------------------------------------------------ */
+/* Tokens                                                              */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Two themes, chosen per letter:
+ *   love   - deep wine desk, blush paper, rose details, a little gold
+ *   friend - the classic writing desk: walnut, cream paper, blue rules
+ * A page sets its theme with `.desk.theme-*`. `.theme-*` on any element
+ * (e.g. the type picker cards) shows that theme locally.
+ */
+
+:root,
+.theme-love {
+  --desk: #2a1218;
+  --desk-light: #4d1f2c;
+  --paper: #fdf6f2;
+  --paper-shade: #f8ebe6;
+  --paper-edge: #f3e0da;
+  --text: #2e2024;
+  --muted: #74585e;
+  --rule: rgba(190, 80, 110, 0.17);
+  --seal: #a3162f;
+  --seal-dark: #6b0b1d;
+  --seal-light: #d0384f;
+  --seal-text: rgba(255, 214, 220, 0.8);
+  --accent: #a3243f;
+  --accent-hover: #8a1c34;
+  --accent-soft: #fff0f2;
+  --quiet-border: rgba(163, 36, 63, 0.4);
+  --quiet-hover: rgba(163, 36, 63, 0.07);
+  --field-bg: #fffbfa;
+  --field-border: #d9b3b8;
+  --option-border: #ecd0d4;
+  --placeholder: #8c6d73;
+  --error-bg: #fbe4e7;
+  --on-desk: #f0d6da;
+  --on-desk-strong: #f8e4e7;
+  --on-desk-muted: #dcb6bd;
+  --card-ring: rgba(227, 194, 122, 0.35);
+  --bar-bg: rgba(42, 18, 24, 0.85);
+  --bar-border: rgba(232, 143, 163, 0.45);
+  --envelope: #f4dcd8;
+  --envelope-shade: #e3bfba;
+  --flap-light: #f9e8e4;
+  --pen-1: #3a0c18;
+  --pen-2: #8a2a40;
+  --pen-3: #2a0811;
+  --mark: #e88fa3;
+}
+
+:root:has(.desk.theme-friend),
+.theme-friend {
+  --desk: #2b211b;
+  --desk-light: #3b2d24;
+  --paper: #fbf6ea;
+  --paper-shade: #f6efdf;
+  --paper-edge: #efe5cf;
+  --text: #2a2420;
+  --muted: #6b5f55;
+  --rule: rgba(66, 104, 156, 0.2);
+  --seal: #9b1c1f;
+  --seal-dark: #6a0f12;
+  --seal-light: #c43a34;
+  --seal-text: rgba(255, 220, 210, 0.85);
+  --accent: #7a2e22;
+  --accent-hover: #8f3829;
+  --accent-soft: #fff8ec;
+  --quiet-border: rgba(42, 36, 32, 0.35);
+  --quiet-hover: rgba(42, 36, 32, 0.07);
+  --field-bg: #fffdf7;
+  --field-border: #c9b99c;
+  --option-border: #ddd0b8;
+  --placeholder: #8f8274;
+  --error-bg: #f8e3df;
+  --on-desk: #e4d8c4;
+  --on-desk-strong: #efe4d0;
+  --on-desk-muted: #cbbda7;
+  --card-ring: rgba(255, 255, 255, 0.06);
+  --bar-bg: rgba(43, 33, 27, 0.85);
+  --bar-border: rgba(251, 246, 234, 0.4);
+  --envelope: #eadcc0;
+  --envelope-shade: #dccaa8;
+  --flap-light: #f1e5cc;
+  --pen-1: #1b1d2e;
+  --pen-2: #3a3f5c;
+  --pen-3: #12131f;
+  --mark: #e0b96a;
+}
+
+:root {
+  --ink: #1d2742;
+  --rose: #e88fa3;
+  --focus: #f2c46d;
+  --error: #a3162f;
+  --radius: 6px;
+  --font-ui: var(--font-serif), Georgia, "Times New Roman", serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-ui);
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--paper);
+  background: var(--desk);
+}
+
+h1,
+h2 {
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0 0 0.4em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout                                                              */
+/* ------------------------------------------------------------------ */
+
+.desk {
+  position: relative;
+  /* Own stacking context, so the drifting hearts (z-index -1) sit
+     above the desk background but behind everything else. */
+  z-index: 0;
+  min-height: 100vh;
+  padding: 28px 16px 48px;
+  color: var(--paper);
+  background: radial-gradient(ellipse at 50% 0%, var(--desk-light), var(--desk) 70%), var(--desk);
+  /* The pen may poke past the paper; never cause sideways scroll. */
+  overflow-x: clip;
+  transition: background-color 0.4s ease;
+}
+
+.intro {
+  max-width: 560px;
+  margin: 0 auto 20px;
+  text-align: center;
+}
+
+.intro h1 {
+  font-size: 2.1rem;
+  font-style: italic;
+}
+
+.intro p {
+  margin: 0;
+  color: var(--on-desk);
+}
+
+.intro .intro-mark,
+.share-mark {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--mark);
+}
+
+.share-mark {
+  color: var(--accent);
+}
+
+/* Faint hearts drifting up behind love letters. */
+.hearts {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hearts span {
+  position: absolute;
+  bottom: -40px;
+  color: var(--rose);
+  opacity: 0;
+  animation: heart-drift linear infinite;
+}
+
+@keyframes heart-drift {
+  0% {
+    transform: translate(0, 0) rotate(-10deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.32;
+  }
+  50% {
+    transform: translate(18px, -55vh) rotate(8deg);
+  }
+  85% {
+    opacity: 0.16;
+  }
+  100% {
+    transform: translate(-10px, -110vh) rotate(-6deg);
+    opacity: 0;
+  }
+}
+
+.card {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 22px 18px;
+  color: var(--text);
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow:
+    0 0 0 1px var(--card-ring),
+    0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+@media (min-width: 600px) {
+  .desk {
+    padding-top: 56px;
+  }
+  .card {
+    padding: 32px 36px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Buttons and fields                                                  */
+/* ------------------------------------------------------------------ */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 10px 20px;
+  font: inherit;
+  font-size: 1.05rem;
+  color: #fff;
+  text-decoration: none;
+  background: var(--accent);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--accent-hover);
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.button-quiet {
+  color: var(--text);
+  background: transparent;
+  border-color: var(--quiet-border);
+}
+
+.button-quiet:hover {
+  background: var(--quiet-hover);
+}
+
+.link-button {
+  display: block;
+  margin: 18px auto 0;
+  padding: 8px;
+  font: inherit;
+  color: var(--accent);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.field {
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+}
+
+.field label,
+.field legend {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1.05rem;
+}
+
+.optional {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--text);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 180px;
+  line-height: 1.45;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--placeholder);
+}
+
+.counter {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  text-align: right;
+  color: var(--muted);
+}
+
+.counter.is-over {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.error {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  color: var(--error);
+  background: var(--error-bg);
+  border-left: 4px solid var(--error);
+  border-radius: 4px;
+}
+
+.composer > .button {
+  width: 100%;
+}
+
+/* Letter type: chooser and the reminder at the top of the form */
+
+.chooser h2 {
+  text-align: center;
+}
+
+.type-options {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+@media (min-width: 520px) {
+  .type-options {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.type-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 14px 16px;
+  font: inherit;
+  color: var(--on-desk-strong);
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 0%, var(--desk-light), var(--desk) 80%);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.type-option:hover {
+  transform: translateY(-2px);
+  border-color: var(--mark);
+}
+
+.type-label {
+  font-size: 1.2rem;
+}
+
+.type-hint {
+  font-size: 0.95rem;
+  color: var(--on-desk-muted);
+}
+
+/* Small envelope drawn in CSS for each type. */
+.mini-envelope {
+  position: relative;
+  width: 112px;
+  height: 74px;
+  margin-bottom: 8px;
+  background: var(--envelope);
+  border-radius: 3px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
+}
+
+.mini-envelope::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--flap-light);
+  clip-path: polygon(0 0, 100% 0, 50% 60%);
+}
+
+.mini-seal {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--seal-text);
+  background: radial-gradient(circle at 38% 34%, var(--seal-light), var(--seal) 55%, var(--seal-dark));
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.12);
+}
+
+.type-current {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: -4px 0 18px;
+  padding: 8px 12px;
+  background: var(--accent-soft);
+  border: 1px solid var(--option-border);
+  border-radius: var(--radius);
+}
+
+.type-current .link-button {
+  display: inline;
+  margin: 0;
+  padding: 4px 0;
+}
+
+/* Handwriting style picker */
+
+.style-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.style-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  margin: 0 !important;
+  background: var(--field-bg);
+  border: 2px solid var(--option-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.style-option.is-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.style-option input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.style-option:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.style-preview {
+  display: block;
+  width: 100%;
+  height: 44px;
+}
+
+.style-name {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* Share panel */
+
+.share {
+  text-align: center;
+}
+
+.share-link {
+  margin: 8px 0 14px;
+  text-align: center;
+}
+
+.share-actions {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 520px) {
+  .share-actions {
+    grid-template-columns: repeat(3, auto);
+    justify-content: center;
+  }
+}
+
+.status {
+  min-height: 1.5em;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.notice {
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Envelope                                                            */
+/* ------------------------------------------------------------------ */
+
+.envelope-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 76px);
+  text-align: center;
+}
+
+.envelope-note {
+  margin: 0 0 22px;
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--on-desk-strong);
+}
+
+.envelope-hint {
+  margin: 22px 0 0;
+  color: var(--on-desk-muted);
+}
+
+.envelope {
+  position: relative;
+  width: min(88vw, 380px);
+  aspect-ratio: 3 / 2;
+  perspective: 900px;
+  filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.45));
+}
+
+.envelope > div {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+}
+
+.envelope-back {
+  background: var(--envelope-shade);
+  z-index: 1;
+}
+
+/* The letter inside, peeking out once the flap is open. */
+.envelope-paper {
+  inset: 8% 6% 6% !important;
+  background: var(--paper);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 14px,
+    var(--rule) 14px 15px
+  );
+  z-index: 2;
+}
+
+.envelope-front {
+  background: var(--envelope);
+  clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%);
+  z-index: 3;
+}
+
+.envelope-flap {
+  background: linear-gradient(to bottom, var(--flap-light), var(--envelope));
+  clip-path: polygon(0 0, 100% 0, 50% 60%);
+  transform-origin: top center;
+  z-index: 4;
+}
+
+.seal {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  z-index: 5;
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
+  display: grid;
+  place-items: center;
+  font: inherit;
+  color: var(--seal-text);
+  background: radial-gradient(circle at 38% 34%, var(--seal-light), var(--seal) 55%, var(--seal-dark));
+  border: 0;
+  border-radius: 46% 54% 50% 50% / 52% 46% 54% 48%;
+  box-shadow:
+    inset 0 0 0 5px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 7px rgba(255, 255, 255, 0.08),
+    0 3px 6px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+/* A gentle heartbeat to invite the tap, on love letters. */
+.theme-love .seal {
+  animation: heartbeat 2.4s ease-in-out infinite;
+}
+
+.seal-mark {
+  width: 54px;
+  height: 54px;
+  font-family: var(--font-ui);
+  filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.35));
+}
+
+.seal:hover {
+  animation: none;
+  transform: scale(1.06);
+}
+
+.seal:focus-visible {
+  outline-offset: 4px;
+}
+
+@keyframes heartbeat {
+  0%,
+  40%,
+  100% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.07);
+  }
+  20% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.05);
+  }
+}
+
+/* Hearts bursting from the seal as it breaks. */
+.seal-burst {
+  z-index: 6;
+  pointer-events: none;
+}
+
+.seal-burst span {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  margin: -0.5em 0 0 -0.4em;
+  font-size: 18px;
+  color: var(--rose);
+  opacity: 0;
+}
+
+.seal-burst span:nth-child(1) { --dx: -90px; --dy: -70px; }
+.seal-burst span:nth-child(2) { --dx: -50px; --dy: -110px; font-size: 13px; }
+.seal-burst span:nth-child(3) { --dx: 0px; --dy: -125px; font-size: 22px; }
+.seal-burst span:nth-child(4) { --dx: 55px; --dy: -105px; font-size: 14px; }
+.seal-burst span:nth-child(5) { --dx: 95px; --dy: -65px; }
+.seal-burst span:nth-child(6) { --dx: -110px; --dy: -15px; font-size: 12px; }
+.seal-burst span:nth-child(7) { --dx: 115px; --dy: -20px; font-size: 12px; }
+
+.is-opening .seal-burst span {
+  animation: heart-burst 0.9s ease-out forwards;
+}
+
+@keyframes heart-burst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1.1);
+  }
+}
+
+/* Opening: seal breaks, flap lifts, letter rises, envelope fades. */
+.is-opening .seal {
+  animation: seal-break 0.3s ease-in forwards;
+}
+
+.is-opening .envelope-flap {
+  animation: flap-open 0.55s 0.2s ease-in-out forwards;
+}
+
+.is-opening .envelope-paper {
+  animation: paper-rise 0.5s 0.65s ease-out forwards;
+}
+
+.is-opening .envelope,
+.is-opening .envelope-note,
+.is-opening .envelope-hint {
+  animation: fade-out 0.3s 1s ease forwards;
+}
+
+@keyframes seal-break {
+  to {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes flap-open {
+  0% {
+    transform: rotateX(0deg);
+    z-index: 4;
+  }
+  50% {
+    z-index: 4;
+  }
+  51% {
+    z-index: 1;
+  }
+  100% {
+    transform: rotateX(180deg);
+    z-index: 1;
+  }
+}
+
+@keyframes paper-rise {
+  to {
+    transform: translateY(-38%);
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* The letter                                                          */
+/* ------------------------------------------------------------------ */
+
+.reading {
+  max-width: 680px;
+  margin: 0 auto;
+  animation: fade-in 0.5s ease both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.sheet {
+  padding: 10px 0 18px;
+  color: var(--text);
+  background: linear-gradient(to bottom right, var(--paper), var(--paper-shade));
+  border-radius: 3px;
+  box-shadow:
+    0 1px 0 var(--paper-edge),
+    0 16px 34px rgba(0, 0, 0, 0.4);
+}
+
+.sheet-inner {
+  position: relative;
+}
+
+.letter-svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.rules line {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.ink path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sheet-placeholder {
+  min-height: 60vh;
+}
+
+.sheet-fallback {
+  margin: 0;
+  padding: 16px 20px;
+  white-space: pre-wrap;
+  font-size: 1.15rem;
+}
+
+.pen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: 20px 136px;
+  transition: opacity 0.4s ease;
+  filter: drop-shadow(-6px 8px 5px rgba(0, 0, 0, 0.25));
+  will-change: transform;
+}
+
+.pen svg {
+  display: block;
+}
+
+.reading-bar {
+  position: sticky;
+  bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.reading-bar .button-quiet {
+  padding: 8px 14px;
+  color: var(--paper);
+  background: var(--bar-bg);
+  border-color: var(--bar-border);
+  min-height: 44px;
+  font-size: 0.95rem;
+}
+
+.reading-bar .button-quiet:hover {
+  background: var(--desk);
+}
+
+.reading-end {
+  margin-top: 22px;
+  text-align: center;
+  animation: fade-in 0.6s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hearts,
+  .seal-burst {
+    display: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
